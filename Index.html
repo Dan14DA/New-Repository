@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymTrack - Sistema de Gestión</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --dark-color: #34495e;
+            --light-color: #ecf0f1;
+            --danger-color: #e74c3c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: var(--dark-color);
+            margin-bottom: 20px;
+        }
+        
+        nav a {
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        nav a:hover {
+            background-color: #2c3e50;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+            margin: 5px 0;
+        }
+        
+        .btn-success {
+            background: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table th {
+            background-color: var(--dark-color);
+            color: white;
+        }
+        
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .search-container {
+            margin-bottom: 20px;
+        }
+        
+        .search-container input {
+            padding: 8px;
+            width: 70%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #ddd;
+            border: none;
+            outline: none;
+        }
+        
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            nav {
+                flex-direction: column;
+            }
+            
+            .search-container input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>GymTrack</h1>
+        <p>Sistema de Gestión para tu Gimnasio Funcional</p>
+    </header>
+    
+    <nav>
+        <a href="#" onclick="openTab(event, 'clientes-tab')">Clientes</a>
+        <a href="#" onclick="openTab(event, 'asistencia-tab')">Registrar Asistencia</a>
+        <a href="#" onclick="openTab(event, 'membresias-tab')">Membresías</a>
+        <a href="#" onclick="openTab(event, 'reportes-tab')">Reportes</a>
+    </nav>
+    
+    <main class="container">
+        <!-- Tab de Clientes -->
+        <div id="clientes-tab" class="tab-content active">
+            <div class="card">
+                <h2>Gestión de Clientes</h2>
+                <div class="search-container">
+                    <input type="text" id="search-client" placeholder="Buscar cliente..." onkeyup="searchClients()">
+                    <button class="btn" onclick="openModal('modal-add-client')">Agregar Cliente</button>
+                </div>
+                
+                <table id="clients-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Membresía</th>
+                            <th>Saldo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clients-list">
+                        <!-- Los clientes se cargarán aquí con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Tab de Registrar Asistencia -->
+        <div id="asistencia-tab" class="tab-content">
+            <div class="card">
+                <h2>Registro de Asistencia</h2>
+                <div class="search-container">
+                    <input type="text" id="search-attendance" placeholder="Buscar por ID o nombre..." onkeyup="searchForAttendance()">
+                </div>
+                
+                <div id="attendance-results">
+                    <!-- Resultados de búsqueda para asistencia -->
+                </div>
+                
+                <div class="card">
+                    <h3>Últimas Asistencias</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Saldo previo</th>
+                                <th>Saldo actual</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-list">
+                            <!-- Las asistencias se cargarán aquí con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab de Membresías -->
+        <div id="membresias-tab" class="tab-content">
+            <div class="card">
+                <h2>Gestión de Membresías</h2>
+                <button class="btn" onclick="openModal('modal-add-membership')">Agregar Plan</button>
+                
+                <table id="memberships-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Créditos</th>
+                            <th>Vigencia (días)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memberships-list">
+                        <!-- Las membresías se cargarán aquí con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Tab de Reportes -->
+        <div id="reportes-tab" class="tab-content">
+            <div class="card">
+                <h2>Reportes</h2>
+                
+                <div class="form-group">
+                    <label for="report-type">Tipo de Reporte:</label>
+                    <select class="form-control" id="report-type">
+                        <option value="daily">Asistencia Diaria</option>
+                        <option value="monthly">Asistencia Mensual</option>
+                        <option value="membership">Membresías Activas</option>
+                        <option value="expiring">Membresías por Vencer</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="generateReport()">Generar Reporte</button>
+                
+                <div id="report-results" class="card" style="margin-top: 20px;">
+                    <!-- Resultados del reporte se mostrarán aquí -->
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Modal para Agregar Cliente -->
+    <div id="modal-add-client" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000;">
+        <div class="modal-content" style="background-color: white; margin: 10% auto; padding: 20px; width: 60%; max-width: 500px; border-radius: 5px; box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2);">
+            <span class="close" onclick="closeModal('modal-add-client')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2>Agregar Nuevo Cliente</h2>
+            <form id="add-client-form">
+                <div class="form-group">
+                    <label for="client-name">Nombre Completo:</label>
+                    <input type="text" class="form-control" id="client-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="client-email">Email:</label>
+                    <input type="email" class="form-control" id="client-email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="client-phone">Teléfono:</label>
+                    <input type="tel" class="form-control" id="client-phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="client-membership">Membresía:</label>
+                    <select class="form-control" id="client-membership" required>
+                        <!-- Las opciones se cargarán con JavaScript -->
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Guardar Cliente</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal para Agregar Membresía -->
+    <div id="modal-add-membership" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000;">
+        <div class="modal-content" style="background-color: white; margin: 10% auto; padding: 20px; width: 60%; max-width: 500px; border-radius: 5px; box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2);">
+            <span class="close" onclick="closeModal('modal-add-membership')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2>Agregar Nuevo Plan</h2>
+            <form id="add-membership-form">
+                <div class="form-group">
+                    <label for="membership-name">Nombre del Plan:</label>
+                    <input type="text" class="form-control" id="membership-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="membership-price">Precio:</label>
+                    <input type="number" class="form-control" id="membership-price" min="0" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="membership-credits">Créditos (número de clases):</label>
+                    <input type="number" class="form-control" id="membership-credits" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="membership-duration">Vigencia (días):</label>
+                    <input type="number" class="form-control" id="membership-duration" min="1" required>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Guardar Plan</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal para Registrar Pago -->
+    <div id="modal-add-payment" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000;">
+        <div class="modal-content" style="background-color: white; margin: 10% auto; padding: 20px; width: 60%; max-width: 500px; border-radius: 5px; box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2);">
+            <span class="close" onclick="closeModal('modal-add-payment')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2>Registrar Pago</h2>
+            <form id="add-payment-form">
+                <input type="hidden" id="payment-client-id">
+                
+                <div class="form-group">
+                    <label for="payment-client-name">Cliente:</label>
+                    <input type="text" class="form-control" id="payment-client-name" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="payment-membership">Membresía:</label>
+                    <select class="form-control" id="payment-membership" required>
+                        <!-- Las opciones se cargarán con JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="payment-amount">Monto:</label>
+                    <input type="number" class="form-control" id="payment-amount" min="0" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="payment-method">Método de Pago:</label>
+                    <select class="form-control" id="payment-method" required>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                        <option value="transferencia">Transferencia Bancaria</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Registrar Pago</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Almacenamiento de datos (simulando una base de datos)
+        let clients = JSON.parse(localStorage.getItem('gym-clients')) || [];
+        let memberships = JSON.parse(localStorage.getItem('gym-memberships')) || [
+            { id: 1, name: "Plan 8 Clases", price: 20000, credits: 8, duration: 30 },
+            { id: 2, name: "Plan 12 Clases", price: 28000, credits: 12, duration: 30 },
+            { id: 3, name: "Mensual Ilimitado", price: 35000, credits: 999, duration: 30 }
+        ];
+        let attendance = JSON.parse(localStorage.getItem('gym-attendance')) || [];
+        let payments = JSON.parse(localStorage.getItem('gym-payments')) || [];
+        
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            renderClients();
+            renderMemberships();
+            renderAttendance();
+            populateMembershipDropdowns();
+            
+            // Event Listeners para formularios
+            document.getElementById('add-client-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addClient();
+            });
+            
+            document.getElementById('add-membership-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addMembership();
+            });
+            
+            document.getElementById('add-payment-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addPayment();
+            });
+            
+            // Abrir la pestaña de clientes por defecto
+            document.getElementById('clientes-tab').classList.add('active');
+        });
+        
+        // Funciones para manejar las pestañas
+        function openTab(event, tabId) {
+            // Ocultar todas las pestañas
+            let tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Mostrar la pestaña seleccionada
+            document.getElementById(tabId).classList.add('active');
+            
+            // Cambiar la clase activa en los botones de navegación
+            let navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            if (event) {
+                event.currentTarget.classList.add('active');
+            }
+        }
+        
+        // Funciones para manejar modales
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // CRUD para Clientes
+        function renderClients() {
+            const clientsList = document.getElementById('clients-list');
+            clientsList.innerHTML = '';
+            
+            clients.forEach(client => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${client.id}</td>
+                    <td>${client.name}</td>
+                    <td>${client.email}</td>
+                    <td>${client.phone}</td>
+                    <td>${getMembershipName(client.membershipId)}</td>
+                    <td>${client.credits}</td>
+                    <td>
+                        <button class="btn btn-success" onclick="openPaymentModal(${client.id})">Pago</button>
+                        <button class="btn" onclick="editClient(${client.id})">Editar</button>
+                        <button class="btn btn-danger" onclick="deleteClient(${client.id})">Eliminar</button>
+                    </td>
+                `;
+                clientsList.appendChild(tr);
+            });
+        }
+        
+        function addClient() {
+            const name = document.getElementById('client-name').value;
+            const email = document.getElementById('client-email').value;
+            const phone = document.getElementById('client-phone').value;
+            const membershipId = parseInt(document.getElementById('client-membership').value);
+            
+            // Encontrar el ID más alto actual y sumar 1
+            const maxId = clients.length > 0 ? Math.max(...clients.map(client => client.id)) : 0;
+            
+            // Crear nuevo cliente
+            const newClient = {
+                id: maxId + 1,
+                name: name,
+                email: email,
+                phone: phone,
+                membershipId: membershipId,
+                credits: 0, // Se establecerá al hacer un pago
+                joinDate: new Date().toISOString()
+            };
+            
+            clients.push(newClient);
+            localStorage.setItem('gym-clients', JSON.stringify(clients));
+            
+            renderClients();
+            closeModal('modal-add-client');
+            document.getElementById('add-client-form').reset();
+        }
+        
+        function editClient(id) {
+            // Implementar la edición de cliente
+            alert("Función de edición de cliente no implementada en esta versión");
+        }
+        
+        function deleteClient(id) {
+            if (confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
+                clients = clients.filter(client => client.id !== id);
+                localStorage.setItem('gym-clients', JSON.stringify(clients));
+                renderClients();
+            }
+        }
+        
+        function searchClients() {
+            const searchTerm = document.getElementById('search-client').value.toLowerCase();
+            const rows = document.getElementById('clients-list').getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.getElementsByTagName('td');
+                let found = false;
+                
+                for (let j = 0; j < cells.length; j++) {
+                    const cellText = cells[j].textContent.toLowerCase();
+                    if (cellText.indexOf(searchTerm) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (found) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+        
+        // CRUD para Membresías
+        function renderMemberships() {
+            const membershipsList = document.getElementById('memberships-list');
+            membershipsList.innerHTML = '';
+            
+            memberships.forEach(membership => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${membership.name}</td>
+                    <td>$${membership.price.toLocaleString()}</td>
+                    <td>${membership.credits}</td>
+                    <td>${membership.duration}</td>
+                    <td>
+                        <button class="btn" onclick="editMembership(${membership.id})">Editar</button>
+                        <button class="btn btn-danger" onclick="deleteMembership(${membership.id})">Eliminar</button>
+                    </td>
+                `;
+                membershipsList.appendChild(tr);
+            });
+        }
+        
+        function addMembership() {
+            const name = document.getElementById('membership-name').value;
+            const price = parseFloat(document.getElementById('membership-price').value);
+            const credits = parseInt(document.getElementById('membership-credits').value);
+            const duration = parseInt(document.getElementById('membership-duration').value);
+            
+            // Encontrar el ID más alto actual y sumar 1
+            const maxId = memberships.length > 0 ? Math.max(...memberships.map(m => m.id)) : 0;
+            
+            // Crear nueva membresía
+            const newMembership = {
+                id: maxId + 1,
+                name: name,
+                price: price,
+                credits: credits,
+                duration: duration
+            };
+            
+            memberships.push(newMembership);
+            localStorage.setItem('gym-memberships', JSON.stringify(memberships));
+            
+            renderMemberships();
+            populateMembershipDropdowns();
+            closeModal('modal-add-membership');
+            document.getElementById('add-membership-form').reset();
+        }
+        
+        function editMembership(id) {
+            // Implementar la edición de membresía
+            alert("Función de edición de membresía no implementada en esta versión");
+        }
+        
+        function deleteMembership(id) {
+            // Verificar si hay clientes con esta membresía
+            const clientsWithMembership = clients.filter(client => client.membershipId === id);
+            
+            if (clientsWithMembership.length > 0) {
+                alert("No se puede eliminar esta membresía porque hay clientes que la están utilizando.");
+                return;
+            }
+            
+            if (confirm("¿Estás seguro de que deseas eliminar esta membresía?")) {
+                memberships = memberships.filter(membership => membership.id !== id);
+                localStorage.setItem('gym-memberships', JSON.stringify(memberships));
+                renderMemberships();
+                populateMembershipDropdowns();
+            }
+        }
+        
+        // Gestión de Asistencia
+        function renderAttendance() {
+            const attendanceList = document.getElementById('attendance-list');
+            attendanceList.innerHTML = '';
+            
+            // Ordenar asistencias por fecha (más recientes primero)
+            const sortedAttendance = [...attendance].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Mostrar solo las últimas 20 asistencias
+            const recentAttendance = sortedAttendance.slice(0, 20);
+            
+            recentAttendance.forEach(record => {
+                const client = clients.find(c => c.id === record.clientId);
+                if (client) {
+                    const tr = document.createElement('tr');
+                    const date = new Date(record.date);
+                    tr.innerHTML = `
+                        <td>${client.name}</td>
+                        <td>${date.toLocaleDateString()}</td>
+                        <td>${date.toLocaleTimeString()}</td>
+                        <td>${record.previousCredits}</td>
+                        <td>${record.currentCredits}</td>
+                    `;
+                    attendanceList.appendChild(tr);
+                }
+            });
+        }
+        
+        function searchForAttendance() {
+            const searchTerm = document.getElementById('search-attendance').value.toLowerCase();
+            const resultsDiv = document.getElementById('attendance-results');
+            
+            if (searchTerm.length < 2) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+            
+            // Buscar clientes que coincidan
+            const matchedClients = clients.filter(client => 
+                client.id.toString().includes(searchTerm) || 
+                client.name.toLowerCase().includes(searchTerm) ||
+                client.email.toLowerCase().includes(searchTerm)
+            );
+            
+            if (matchedClients.length === 0) {
+                resultsDiv.innerHTML = '<p>No se encontraron clientes.</p>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '';
+            
+            matchedClients.forEach(client => {
+                const clientCard = document.createElement('div');
+                clientCard.className = 'card';
+                clientCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3>${client.name}</h3>
+                            <p>ID: ${client.id} | Créditos: ${client.credits}</p>
+                            <p>Membresía: ${getMembershipName(client.membershipId)}</p>
+                        </div>
+                        <button class="btn btn-success" onclick="registerAttendance(${client.id})">Registrar Asistencia</button>
+                    </div>
+                `;
+                resultsDiv.appendChild(clientCard);
+            });
+        }
+        
+        function registerAttendance(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            
+            if (!client) {
+                alert("Cliente no encontrado.");
+                return;
+            }
+            
+            if (client.credits <= 0) {
+                alert("Este cliente no tiene créditos disponibles. Por favor, registre un nuevo pago.");
+                return;
+            }
+            
+            // Registrar la asistencia
+            const previousCredits = client.credits;
+            client.credits -= 1; // Descontar un crédito
+            
+            const attendanceRecord = {
+                id: attendance.length > 0 ? Math.max(...attendance.map(a => a.id)) + 1 : 1,
+                clientId: client.id,
+                date: new Date().toISOString(),
+                previousCredits: previousCredits,
+                currentCredits: client.credits
+            };
+            
+            attendance.push(attendanceRecord);
+            
+            // Actualizar los datos
+            localStorage.setItem('gym-clients', JSON.stringify(clients));
+            localStorage.setItem('gym-attendance', JSON.stringify(attendance));
+            
+            renderAttendance();
+            searchForAttendance(); // Actualizar resultados de búsqueda
+            
+            alert(`Asistencia registrada para ${client.name}. Créditos restantes: ${client.credits}`);
+        }
+        
+        // Gestión de Pagos
+        function openPaymentModal(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            
+            if (!client) {
+                alert("Cliente no encontrado.");
+                return;
+            }
+            
+            document.getElementById('payment-client-id').value = client.id;
+            document.getElementById('payment-client-name').value = client.name;
+            
+            // Poblar el dropdown de membresías si no se ha hecho antes
+            populateMembershipDropdowns('payment-membership');
+            
+            openModal('modal-add-payment');
+        }
+        
+        function addPayment() {
+            const clientId = parseInt(document.getElementById('payment-client-id').value);
+            const membershipId = parseInt(document.getElementById('payment-membership').value);
+            const amount = parseFloat(document.getElementById('payment-amount').value);
+            const method = document.getElementById('payment-method').value;
+            
+            const client = clients.find(c => c.id === clientId);
+            const membership = memberships.find(m => m.id === membershipId);
+            
+            if (!client || !membership) {
+                alert("Error al procesar el pago. Cliente o membresía no encontrados.");
+                return;
+            }
+            
+            // Crear registro de pago
+            const payment = {
+                id: payments.length > 0 ? Math.max(...payments.map(p => p.id)) + 1 : 1,
+                clientId: clientId,
+                membershipId: membershipId,
+                amount: amount,
+                method: method,
+                date: new Date().toISOString()
+            };
+            
+            // Actualizar créditos del cliente
+            client.credits += membership.credits;
+            client.membershipId = membership
